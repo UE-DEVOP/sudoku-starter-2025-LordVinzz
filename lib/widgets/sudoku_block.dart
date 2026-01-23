@@ -34,6 +34,11 @@ class SudokuBlock extends StatelessWidget {
         children: List.generate(9, (cellIndex) {
           final value =
               puzzle.board()?.matrix()?[blockIndex][cellIndex].getValue() ?? 0;
+          final expected =
+              puzzle.solvedBoard()?.matrix()?[blockIndex][cellIndex].getValue() ??
+                  0;
+          final displayValue = value == 0 ? expected : value;
+          final isExpected = value == 0 && expected != 0;
           final isSelected =
               blockIndex == selectedBlock && cellIndex == selectedCell;
           return Container(
@@ -48,7 +53,12 @@ class SudokuBlock extends StatelessWidget {
               child: InkWell(
                 onTap: () => onCellTap(blockIndex, cellIndex),
                 child: Center(
-                  child: Text(value == 0 ? '' : value.toString()),
+                  child: Text(
+                    displayValue == 0 ? '' : displayValue.toString(),
+                    style: TextStyle(
+                      color: isExpected ? Colors.black12 : Colors.black,
+                    ),
+                  ),
                 ),
               ),
             ),
