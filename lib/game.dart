@@ -1,27 +1,17 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 import 'package:sudoku_starter/widgets/sudoku_block.dart';
 
-class Game extends StatefulWidget {
-  const Game({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
 
   @override
-  State<Game> createState() => _GameState();
+  State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameState extends State<Game> {
+class _GameScreenState extends State<GameScreen> {
   Puzzle? _puzzle;
   bool _isLoading = true;
   int? _selectedBlock;
@@ -74,9 +64,28 @@ class _GameState extends State<Game> {
         final pos = Position(row: _selectedBlock!, column: _selectedCell!);
         _puzzle!.board()!.cellAt(pos).setValue(value);
       });
+      if (_isSolved()) {
+        context.go('/end');
+      }
     } else {
       _showWrongValue();
     }
+  }
+
+  bool _isSolved() {
+    final board = _puzzle?.board()?.matrix();
+    final solved = _puzzle?.solvedBoard()?.matrix();
+    if (board == null || solved == null) {
+      return false;
+    }
+    for (var row = 0; row < 9; row++) {
+      for (var col = 0; col < 9; col++) {
+        if (board[row][col].getValue() != solved[row][col].getValue()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   void _showWrongValue() {
@@ -122,9 +131,7 @@ class _GameState extends State<Game> {
 
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Sudoku'),
       ),
       body: Center(
         child: _isLoading
