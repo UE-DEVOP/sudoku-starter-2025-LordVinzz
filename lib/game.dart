@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku_api/sudoku_api.dart';
 import 'package:sudoku_starter/widgets/sudoku_block.dart';
 
 class Game extends StatefulWidget {
@@ -20,6 +21,33 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
+  Puzzle? _puzzle;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _generatePuzzle();
+  }
+
+  @override
+  void dispose() {
+    _puzzle?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _generatePuzzle() async {
+    final puzzle = Puzzle(PuzzleOptions(name: 'Sudoku', clues: 30));
+    await puzzle.generate();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _puzzle = puzzle;
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height / 2;
@@ -34,18 +62,24 @@ class _GameState extends State<Game> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: SizedBox(
-          height: boxSize * 3,
-          width: boxSize * 3,
-          child: GridView.count(
-            crossAxisCount: 3,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            children: List.generate(9, (x) {
-              return SudokuBlock(boxSize: boxSize);
-            }),
-          ),
-        ),
+        child: _isLoading
+            ? const CircularProgressIndicator()
+            : SizedBox(
+                height: boxSize * 3,
+                width: boxSize * 3,
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  children: List.generate(9, (blockIndex) {
+                    return SudokuBlock(
+                      boxSize: boxSize,
+                      blockIndex: blockIndex,
+                      puzzle: _puzzle!,
+                    );
+                  }),
+                ),
+              ),
       ),
     );
   }
