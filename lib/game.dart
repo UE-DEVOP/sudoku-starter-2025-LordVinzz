@@ -57,6 +57,33 @@ class _GameState extends State<Game> {
     });
   }
 
+  void _enterValue(int value) {
+    if (_puzzle == null || _selectedBlock == null || _selectedCell == null) {
+      return;
+    }
+    setState(() {
+      final pos = Position(row: _selectedBlock!, column: _selectedCell!);
+      _puzzle!.board()!.cellAt(pos).setValue(value);
+    });
+  }
+
+  Widget _buildNumberRow(List<int> values) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: values
+          .map(
+            (value) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ElevatedButton(
+                onPressed: () => _enterValue(value),
+                child: Text('$value'),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height / 2;
@@ -73,24 +100,33 @@ class _GameState extends State<Game> {
       body: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
-            : SizedBox(
-                height: boxSize * 3,
-                width: boxSize * 3,
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.zero,
-                  children: List.generate(9, (blockIndex) {
-                    return SudokuBlock(
-                      boxSize: boxSize,
-                      blockIndex: blockIndex,
-                      puzzle: _puzzle!,
-                      selectedBlock: _selectedBlock,
-                      selectedCell: _selectedCell,
-                      onCellTap: _selectCell,
-                    );
-                  }),
-                ),
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: boxSize * 3,
+                    width: boxSize * 3,
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      children: List.generate(9, (blockIndex) {
+                        return SudokuBlock(
+                          boxSize: boxSize,
+                          blockIndex: blockIndex,
+                          puzzle: _puzzle!,
+                          selectedBlock: _selectedBlock,
+                          selectedCell: _selectedCell,
+                          onCellTap: _selectCell,
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildNumberRow(const [1, 2, 3, 4, 5]),
+                  const SizedBox(height: 8),
+                  _buildNumberRow(const [6, 7, 8, 9]),
+                ],
               ),
       ),
     );
