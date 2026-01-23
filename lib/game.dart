@@ -66,7 +66,7 @@ class _GameState extends State<Game> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'You have pushed the moi luc many times:',
             ),
             Text(
               '$_counter',
