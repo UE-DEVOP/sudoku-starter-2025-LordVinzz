@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 import 'package:sudoku_starter/widgets/sudoku_block.dart';
@@ -61,10 +62,38 @@ class _GameState extends State<Game> {
     if (_puzzle == null || _selectedBlock == null || _selectedCell == null) {
       return;
     }
-    setState(() {
-      final pos = Position(row: _selectedBlock!, column: _selectedCell!);
-      _puzzle!.board()!.cellAt(pos).setValue(value);
-    });
+    final solvedValue = _puzzle
+        ?.solvedBoard()
+        ?.matrix()?[_selectedBlock!][_selectedCell!]
+        .getValue();
+    if (solvedValue == null) {
+      return;
+    }
+    if (value == solvedValue) {
+      setState(() {
+        final pos = Position(row: _selectedBlock!, column: _selectedCell!);
+        _puzzle!.board()!.cellAt(pos).setValue(value);
+      });
+    } else {
+      _showWrongValue();
+    }
+  }
+
+  void _showWrongValue() {
+    const snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Erreur',
+        message: 'Cette valeur n\'est pas correcte.',
+        contentType: ContentType.failure,
+      ),
+    );
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 
   Widget _buildNumberRow(List<int> values) {
