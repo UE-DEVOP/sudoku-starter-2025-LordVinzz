@@ -23,6 +23,8 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
   Puzzle? _puzzle;
   bool _isLoading = true;
+  int? _selectedBlock;
+  int? _selectedCell;
 
   @override
   void initState() {
@@ -45,6 +47,13 @@ class _GameState extends State<Game> {
     setState(() {
       _puzzle = puzzle;
       _isLoading = false;
+    });
+  }
+
+  void _selectCell(int blockIndex, int cellIndex) {
+    setState(() {
+      _selectedBlock = blockIndex;
+      _selectedCell = cellIndex;
     });
   }
 
@@ -76,6 +85,9 @@ class _GameState extends State<Game> {
                       boxSize: boxSize,
                       blockIndex: blockIndex,
                       puzzle: _puzzle!,
+                      selectedBlock: _selectedBlock,
+                      selectedCell: _selectedCell,
+                      onCellTap: _selectCell,
                     );
                   }),
                 ),
