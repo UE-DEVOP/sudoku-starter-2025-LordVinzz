@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku_starter/widgets/sudoku_block.dart';
 
 class Game extends StatefulWidget {
   const Game({Key? key, required this.title}) : super(key: key);
@@ -39,14 +40,9 @@ class _GameState extends State<Game> {
           child: GridView.count(
             crossAxisCount: 3,
             physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
             children: List.generate(9, (x) {
-              return Container(
-                width: boxSize,
-                height: boxSize,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent),
-                ),
-              );
+              return SudokuBlock(boxSize: boxSize);
             }),
           ),
         ),
